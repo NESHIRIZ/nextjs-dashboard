@@ -1,3 +1,7 @@
+'use client';
+
+import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { lusitana } from '@/app/ui/fonts';
 import {
   AtSymbolIcon,
@@ -8,8 +12,24 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 
 export default function LoginForm() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!email || !password) {
+      setError('Please enter your email and password.');
+      return;
+    }
+
+    setError('');
+    router.push('/dashboard');
+  };
+
   return (
-    <form className="space-y-3">
+    <form className="space-y-3" onSubmit={handleSubmit}>
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
         <h1 className={`${lusitana.className} mb-3 text-2xl`}>
           Please log in to continue.
@@ -24,6 +44,8 @@ export default function LoginForm() {
             </label>
             <div className="relative">
               <input
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="email"
                 type="email"
@@ -43,6 +65,8 @@ export default function LoginForm() {
             </label>
             <div className="relative">
               <input
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
                 className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="password"
                 type="password"
@@ -58,8 +82,13 @@ export default function LoginForm() {
         <Button className="mt-4 w-full">
           Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
         </Button>
-        <div className="flex h-8 items-end space-x-1">
-          {/* Add form errors here */}
+        <div className="flex h-8 items-end space-x-1" aria-live="polite">
+          {error ? (
+            <>
+              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+              <p className="text-sm text-red-500">{error}</p>
+            </>
+          ) : null}
         </div>
       </div>
     </form>
